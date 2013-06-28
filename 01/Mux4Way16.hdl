@@ -16,5 +16,9 @@ CHIP Mux4Way16 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // notice that you can assign the full array bus to a variable without array notation
+    Mux16(a=a, b=b, sel=sel[0], out=w1);
+    Mux16(a[0..15]=c, b[0..15]=d, sel=sel[0], out[0..15]=w2);
+    Mux16(a[0..15]=w1, b[0..15]=w2, sel=sel[1], out[0..15]=out);
+    
 }
