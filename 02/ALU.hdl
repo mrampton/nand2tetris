@@ -45,5 +45,27 @@ CHIP ALU {
         ng; // 1 if (out<0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // Preset x; options are to zero x, and negate x
+    Mux16(a=x, b=false, sel=zx, out=muxx);
+    Not16(in=muxx, out=notx);
+    Mux16(a=muxx, b=notx, sel=nx, out=xpreset);
+
+    // Preset y; options are to zero y, and negate y
+    Mux16(a=y, b=false, sel=zy, out=muxy);
+    Not16(in=muxy, out=noty);
+    Mux16(a=muxy, b=noty, sel=ny, out=ypreset);
+    
+    // Perform either Addition or And
+    Add16(a=xpreset, b=ypreset, out=addxy);
+    And16(a=xpreset, b=ypreset, out=andxy);
+    Mux16(a=andxy, b=addxy, sel=f, out=wiref);
+    
+    // Pipe result to out and pass on to determine zero and negative flags
+    Not16(in=wiref, out=notwiref);
+    Mux16(a=wiref, b=notwiref, sel=no, out=out, out[0..7]=lowout, out[8..15]=highout, out[15]=ng);
+    
+    Or8Way(in=lowout, out=zero1);
+    Or8Way(in=highout, out=zero2);
+    Or(a=zero1, b=zero2, out=zero3);
+    Not(in=zero3, out=zr);
 }
